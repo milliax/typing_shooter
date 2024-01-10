@@ -1,6 +1,7 @@
 # Typing Shooter
 
 This is a game made for people who want to practice their typing speed.
+
 this project is derived from [2023 javascript course held in NYCU](https://github.com/milliax/2023_javascript_course)
 
 ## Available Scripts
