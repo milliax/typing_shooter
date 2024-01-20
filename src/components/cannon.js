@@ -8,12 +8,13 @@ import { connect } from 'react-redux';
 
 const mapStateToProps = (state) => ({
     cards: state.game.cards,
+    timeRemain: state.game.timeRemain
 })
 
 function Fort({ ...props }) {
     const dispatch = useDispatch();
 
-    const [angle, setAngle] = useState(10);
+    const [angle, setAngle] = useState(0);
     const barrelRef = useRef(null);
     const [typedWord, setTypedWord] = useState('')
     const typedWordRef = useRef('');
@@ -56,15 +57,18 @@ function Fort({ ...props }) {
 
     useEffect(() => {
         // console.log('new word list')
-        wordListRef.current = props.cards.map((card) => card.word.toLowerCase())
+        wordListRef.current = props.cards.map((card) => card)
     }, [props.cards])
 
     const submitWord = (word) => {
         // verify
         let isWordExist = false;
+        let c = null;
         for (let card of wordListRef.current) {
-            if (card === word.toLowerCase()) {
+            if (card.word.toLowerCase() === word.toLowerCase()) {
                 isWordExist = true;
+                c = card;
+                console.log(card)
                 break;
             }
         }
@@ -75,6 +79,17 @@ function Fort({ ...props }) {
         }
         console.log('rocked launched: ', word)
         // dispatch(setState('in_game'))
+
+        // set degree
+        const opposite_percent = (90 - ((c.spawnTime - props.timeRemain) * c.velocity)) / 100
+        const neighbor_percent = (c.x - 50) / 100
+        const degree = Math.atan(window.innerHeight / window.innerWidth * opposite_percent / neighbor_percent) * 2 / Math.PI * 100
+        console.log("opposite percent", opposite_percent)
+        console.log("neighbor percent", neighbor_percent)
+        console.log('degree', degree)
+
+        setAngle(degree > 0 ? 90 - degree : (90 + degree) * -1);
+
         dispatch(removeCardByWord(word))
         dispatch(addScoreByAmount(word.length * 2))
     }
